@@ -9,7 +9,7 @@ from time import sleep
 import os
 import sys
 
-class Binance:
+class Blockchain:
     src = ""
     lastPrice = 0.0
 
@@ -29,19 +29,15 @@ class Binance:
         while True:
             try:
                 # Wait until the element appear on the src page.
-                main = WebDriverWait(browser, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "list-auto-sizer"))
+                price = WebDriverWait(browser, 10).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "kpvYqK"))
                 )
                 
-                values = main.find_elements_by_class_name("List_list-item-container__oHFzZ")
-                for value in values:
-                    prices = value.find_elements_by_class_name("List_list-item-entity__1f-x_")
-                    for price in prices:
-                        priceItem = price.find_element_by_class_name("price")
-                        indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
-                        self.lastPrice = priceItem.text.replace(",", "")
+                # price = main.find_element_by_class_name("kpvYqK")
+                indicator = "-" if float(self.lastPrice) > float(price.text.replace(",", "")) else "+"
+                self.lastPrice = price.text.replace(",", "")
 
-                        print(indicator, "$" + self.lastPrice)
+                print(indicator, "$" + self.lastPrice)
 
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.")
