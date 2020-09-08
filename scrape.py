@@ -5,7 +5,7 @@ from src.Bitmex import Bitmex
 import time
 import os
 from sys import exit, argv, exc_info
-
+# https://linuxize.com/post/how-to-install-google-chrome-web-browser-on-ubuntu-20-04/
 validArgs = ['binance', 'blockchain', 'bitmex']
 
 try:

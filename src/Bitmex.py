@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -20,7 +22,10 @@ class Bitmex:
         PATH = os.path.abspath(file)
 
         # Set browser
-        browser = webdriver.Chrome(PATH)
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        browser = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_options)
 
         # Load the page
         browser.get(self.src)
