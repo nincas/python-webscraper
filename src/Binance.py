@@ -20,11 +20,11 @@ class Binance:
         PATH = os.path.abspath(file)
 
         # Set browser
-        browser = webdriver.Chrome(PATH)
+        browser = webdriver.Chrome(executable_path=r''+PATH)
 
         # Load the page
         browser.get(self.src)
-        browser.implicitly_wait(10)
+        browser.implicitly_wait(10)     
 
         while True:
             try:
