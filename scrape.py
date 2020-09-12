@@ -1,12 +1,19 @@
 from src.Binance import Binance
 from src.Blockchain import Blockchain
 from src.Bitmex import Bitmex
-
 import time
 import os
+import asyncio
+import websockets
+# from src.components.SocketServer import handler
+import redis
 from sys import exit, argv, exc_info
-# https://linuxize.com/post/how-to-install-google-chrome-web-browser-on-ubuntu-20-04/
+
+
+# Vars
 validArgs = ['binance', 'blockchain', 'bitmex']
+redisClient = redis.Redis(host='10.19.3.24', port=6379, password='Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf')
+
 
 try:
     if len(argv) <= 1:
@@ -25,23 +32,19 @@ try:
         if argv[1] == 'binance':
             # Binance - Pattern
             binance = Binance("https://www.binance.com/en/trade/BTC_USDT")
-            binance.scrape(PATH)
+            binance.scrape(PATH, redisClient)
 
         elif argv[1] == 'blockchain':
             # Blockchain - Pattern
             blockChain = Blockchain("https://exchange.blockchain.com/trade")
-            blockChain.scrape(PATH)
-
-        elif argv[1] == 'blockchain':
-            # Blockchain - Pattern
-            blockChain = Blockchain("https://exchange.blockchain.com/trade")
-            blockChain.scrape(PATH)
+            blockChain.scrape(PATH, redisClient)
 
         elif argv[1] == 'bitmex':
             # Blockchain - Pattern
             blockChain = Bitmex("https://www.bitmex.com/app/trade/XBTUSD")
-            blockChain.scrape(PATH)
+            blockChain.scrape(PATH, redisClient)
 
 except Exception as error:
     print("Oops! Error Caught:", error)
     exit(0)
+

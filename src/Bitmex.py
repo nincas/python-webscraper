@@ -18,7 +18,7 @@ class Bitmex:
     def __init__(self, srcUrl):
         self.src = srcUrl
 
-    def scrape(self, file):
+    def scrape(self, file, redis):
         PATH = os.path.abspath(file)
 
         # Set browser
@@ -43,6 +43,11 @@ class Bitmex:
                 self.lastPrice = spanPrice.text.replace(",", "")
 
                 print(indicator, "$" + self.lastPrice)
+                redis.publish('btc-value', json.dumps({
+                    "source": self.src,
+                    "indicator": indicator,
+                    "value": float(self.lastPrice)
+                }))
 
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.")
