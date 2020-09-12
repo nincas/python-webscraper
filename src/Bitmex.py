@@ -8,6 +8,7 @@ from selenium.common import exceptions
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+from .components.RedisClient import RedisClient
 import os
 import sys
 import json
@@ -19,7 +20,7 @@ class Bitmex:
     def __init__(self, srcUrl):
         self.src = srcUrl
 
-    def scrape(self, file, redis):
+    def scrape(self, file):
         PATH = os.path.abspath(file)
 
         # Set browser
@@ -31,6 +32,7 @@ class Bitmex:
         # Load the page
         browser.get(self.src)
         browser.implicitly_wait(10)
+        r = RedisClient()
 
         while True:
             try:
@@ -44,7 +46,7 @@ class Bitmex:
                 self.lastPrice = spanPrice.text.replace(",", "")
 
                 print(indicator, "$" + self.lastPrice)
-                redis.publish('btc-value', json.dumps({
+                r.publishValue('btc-value', json.dumps({
                     "source": self.src,
                     "indicator": indicator,
                     "value": float(self.lastPrice)

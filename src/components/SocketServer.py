@@ -3,6 +3,7 @@ import json
 import logging
 import websockets
 import redis
+from .RedisClient import RedisClient
 
 logging.basicConfig()
 
@@ -10,12 +11,14 @@ STATE = {"value": {} }
 
 USERS = set()
 
-client = redis.Redis(host='10.19.3.24', port=6379, password='Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf')
-pubsub = client.pubsub()
-pubsub.subscribe('btc-value')
+# client = redis.Redis(host='10.19.3.24', port=6379, password='Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf')
+# pubsub = client.pubsub()
+# pubsub.subscribe('btc-value')
+client = RedisClient()
+pubsub = client.subToKey('btc-value')
 
 def state_event():
-    return json.dumps({**STATE['value']})
+    return json.dumps({"type": "btc", **STATE['value']})
 
 
 def users_event():
@@ -49,7 +52,7 @@ async def handler(websocket, path):
     await websocket.send(users_event())
     try:
         while True:
-            message = pubsub.get_message();
+            message = pubsub.getSubMessage();
             if message and not message['data'] == 1: 
                 print(message['data'].decode('utf-8'))
                 jstr = json.loads(message['data'].decode('utf-8'))
