@@ -2,63 +2,62 @@ import asyncio
 import json
 import logging
 import websockets
+from websockets import WebSocketClientProtocol
 import redis
-from .RedisClient import RedisClient
+import socket
+from .RedisClientAsync import RedisClientAsync
 
-logging.basicConfig()
+# logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 
-STATE = {"value": {} }
+class SocketServer:
+    PORT = 6789
+    FORMAT = 'utf-8'
+    SERVER = socket.gethostbyname(socket.gethostname())
+    clients = set()
+    STATE = {"value": {} }
+    # client = RedisClient()
+    # pubsub = client.subToKey('btc-value')
+    ALLOWED_ORIGINS = [
+        '127.0.0.1'
+    ]
+    
+    async def register(self, ws: WebSocketClientProtocol) -> None:
+        self.clients.add(ws)
+        logging.info(f'{ws.remote_address} connects')
 
-USERS = set()
+    async def unregister(self, ws: WebSocketClientProtocol) -> None:
+        self.clients.remove(ws)
+        logging.info(f'{ws.remote_address} disconnects')
 
-# client = redis.Redis(host='10.19.3.24', port=6379, password='Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf')
-# pubsub = client.pubsub()
-# pubsub.subscribe('btc-value')
-client = RedisClient()
-pubsub = client.subToKey('btc-value')
+    async def send_to_clients(self, message: str) -> None:
+        if self.clients:
+            await asyncio.wait([client.send(message) for client in self.clients])
 
-def state_event():
-    return json.dumps({"type": "btc", **STATE['value']})
+    async def ws_handler(self, ws: WebSocketClientProtocol, uri: str) -> None:
+        await self.register(ws)
+        try:
+            await self.distribute(ws)
+        finally:
+            await self.unregister(ws)
 
+    async def distribute(self, ws: WebSocketClientProtocol) -> None:
+        async for message in ws:
+            msg = json.loads(message)
+            logging.info(msg)
+            if msg:
+                client = await RedisClientAsync().main()
+                ch = await client.subToKey('btc-value')
+                pubsub = await ch.getChannels()
+                while await pubsub.wait_message():
+                    msg = await pubsub.get()
+                    if msg:
+                        await self.send_to_clients(msg.decode(self.FORMAT))
 
-def users_event():
-    return json.dumps({"type": "users", "value": len(USERS)})
-
-
-async def notify_state():
-    if USERS:  # asyncio.wait doesn't accept an empty list
-        message = state_event()
-        await asyncio.wait([user.send(message) for user in USERS])
-
-
-async def notify_users():
-    if USERS:  # asyncio.wait doesn't accept an empty list
-        message = users_event()
-        await asyncio.wait([user.send(message) for user in USERS])
-
-
-async def register(websocket):
-    USERS.add(websocket)
-    await notify_users()
-
-
-async def unregister(websocket):
-    USERS.remove(websocket)
-    await notify_users()
-
-async def handler(websocket, path):
-    # register(websocket) sends user_event() to websocket
-    await register(websocket)
-    await websocket.send(users_event())
-    try:
-        while True:
-            message = pubsub.getSubMessage();
-            if message and not message['data'] == 1: 
-                print(message['data'].decode('utf-8'))
-                jstr = json.loads(message['data'].decode('utf-8'))
-                STATE['value'] = jstr
-                await notify_state()
-    finally:
-        await unregister(websocket)
-
-
+    # Starting function to run the server
+    def start(self):
+        logging.info(f'Server has started.')
+        startServer = websockets.serve(self.ws_handler, self.SERVER, self.PORT)
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(startServer)
+        loop.run_forever()

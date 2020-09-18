@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .minus {
+            color: red;
+        }
+
+        .add {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <button onclick="disconnect()">
+        Disconnect
+    </button>
+    <h4 id="btcValueOld"></h4>
+    <h3 id="btcValue"></h3>
+</body>
+
+<script>
+    let oldValue;
+    let socket = new WebSocket("ws://192.168.56.1:6789")
+    socket.onopen = function (evt) {
+        socket.send(JSON.stringify({ 'origin': window.location.hostname }))
+    }
+
+    socket.onmessage = function (evt) {
+        let obj = JSON.parse(evt.data);
+        let classTxt = obj.indicator == '-' ? 'minus' : 'add';
+        document.getElementById('btcValue').innerHTML = `$${obj.value}`
+        document.getElementById('btcValueOld').innerHTML = `$${oldValue}`
+        oldValue = obj.value;
+        document.getElementById('btcValue').classList.remove((classTxt == 'add' ? 'minus' : 'add'))
+        document.getElementById('btcValue').classList.add(classTxt)
+
+        socket.send(JSON.stringify({
+            'continues': true
+        }))
+    }
+    
+    function disconnect() {
+        socket.send(JSON.stringify({disconnect: '!DISCONNECT'}));
+    }
+</script>
+</html>
