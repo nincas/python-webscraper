@@ -14,26 +14,35 @@ class SocketServer:
     PORT = 6789
     FORMAT = 'utf-8'
     SERVER = socket.gethostbyname(socket.gethostname())
-    clients = set()
+    CLIENTS = set()
     STATE = {"value": {} }
-    # client = RedisClient()
-    # pubsub = client.subToKey('btc-value')
     ALLOWED_ORIGINS = [
         '127.0.0.1'
     ]
     
+    # Register socket user on list
     async def register(self, ws: WebSocketClientProtocol) -> None:
-        self.clients.add(ws)
+        self.CLIENTS.add(ws)
         logging.info(f'{ws.remote_address} connects')
 
+
+
+
+    # Remove socket user on list
     async def unregister(self, ws: WebSocketClientProtocol) -> None:
-        self.clients.remove(ws)
+        self.CLIENTS.remove(ws)
         logging.info(f'{ws.remote_address} disconnects')
 
-    async def send_to_clients(self, message: str) -> None:
-        if self.clients:
-            await asyncio.wait([client.send(message) for client in self.clients])
 
+
+    # Broadcaster
+    async def send_to_clients(self, message: str) -> None:
+        if self.CLIENTS:
+            await asyncio.wait([client.send(message) for client in self.CLIENTS])
+
+
+
+    # Main handler/entry point
     async def ws_handler(self, ws: WebSocketClientProtocol, uri: str) -> None:
         await self.register(ws)
         try:
@@ -41,6 +50,10 @@ class SocketServer:
         finally:
             await self.unregister(ws)
 
+
+
+
+    # Distributor function handles all messages and publish events
     async def distribute(self, ws: WebSocketClientProtocol) -> None:
         async for message in ws:
             msg = json.loads(message)
@@ -53,6 +66,8 @@ class SocketServer:
                     msg = await pubsub.get()
                     if msg:
                         await self.send_to_clients(msg.decode(self.FORMAT))
+
+
 
     # Starting function to run the server
     def start(self):
