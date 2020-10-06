@@ -46,7 +46,7 @@ class Blockchain:
                 self.lastPrice = price.text.replace(",", "")
 
                 print(indicator, "$" + self.lastPrice)
-                r.publishValue('btc-value', json.dumps({
+                r.publishValue('btc-value-blockchain', json.dumps({
                     "source": self.src,
                     "indicator": indicator,
                     "value": float(self.lastPrice)

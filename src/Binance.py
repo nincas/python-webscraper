@@ -51,7 +51,7 @@ class Binance:
 
                         print(indicator, "$" + self.lastPrice)
                         r = RedisClient()
-                        r.publishValue('btc-value', json.dumps({
+                        r.publishValue('btc-value-binance', json.dumps({
                             "source": self.src,
                             "indicator": indicator,
                             "value": float(self.lastPrice)

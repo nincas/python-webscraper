@@ -60,7 +60,7 @@ class SocketServer:
             logging.info(msg)
             if msg:
                 client = await RedisClientAsync().main()
-                ch = await client.subToKey('btc-value')
+                ch = await client.subToKey('btc-value-' + msg.source)
                 pubsub = await ch.getChannels()
                 while await pubsub.wait_message():
                     msg = await pubsub.get()
