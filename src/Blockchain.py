@@ -38,9 +38,9 @@ class Blockchain:
             try:
                 # Wait until the element appear on the src page.
                 price = WebDriverWait(browser, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "kpvYqK"))
+                    EC.presence_of_element_located((By.CLASS_NAME, "boKFwX"))
                 )
-                
+
                 # price = main.find_element_by_class_name("kpvYqK")
                 indicator = "-" if float(self.lastPrice) > float(price.text.replace(",", "")) else "+"
                 self.lastPrice = price.text.replace(",", "")
