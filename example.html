@@ -24,9 +24,9 @@
 
 <script>
     let oldValue;
-    let socket = new WebSocket("ws://192.168.56.1:6789")
+    let socket = new WebSocket("ws://193.108.118.125:3003")
     socket.onopen = function (evt) {
-        socket.send(JSON.stringify({ 'origin': window.location.hostname }))
+        socket.send(JSON.stringify({ 'origin': window.location.hostname, 'source': 'bitmex' }))
     }
 
     socket.onmessage = function (evt) {
@@ -41,6 +41,10 @@
         socket.send(JSON.stringify({
             'continues': true
         }))
+    }
+
+    socket.onerror = function (e) {
+        console.log(e)
     }
     
     function disconnect() {
