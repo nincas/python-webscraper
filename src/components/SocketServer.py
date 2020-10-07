@@ -6,6 +6,7 @@ from websockets import WebSocketClientProtocol
 import redis
 import socket
 from .RedisClientAsync import RedisClientAsync
+from time import sleep
 
 # logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 logging.basicConfig(level=logging.INFO)
@@ -64,6 +65,7 @@ class SocketServer:
                 pubsub = await ch.getChannels()
                 while await pubsub.wait_message():
                     msg = await pubsub.get()
+                    sleep(1)
                     if msg:
                         await self.send_to_clients(msg.decode(self.FORMAT))
 
