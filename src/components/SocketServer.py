@@ -12,7 +12,7 @@ from time import sleep
 logging.basicConfig(level=logging.INFO)
 
 class SocketServer:
-    PORT = 6789
+    PORT = 3003
     FORMAT = 'utf-8'
     SERVER = socket.gethostbyname(socket.gethostname())
     CLIENTS = set()
