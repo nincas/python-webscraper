@@ -23,29 +23,48 @@
 </body>
 
 <script>
-    let oldValue;
-    let socket = new WebSocket("ws://193.108.118.125:3003")
-    socket.onopen = function (evt) {
-        socket.send(JSON.stringify({ 'origin': window.location.hostname, 'source': 'bitmex' }))
+    function connect() {
+        let oldValue;
+        let socket = new WebSocket("ws://193.108.118.125:3003")
+        socket.onopen = function (evt) {
+            socket.send(JSON.stringify({ 'origin': window.location.hostname, 'source': 'binance' }))
+        }
+
+        socket.onmessage = function (evt) {
+            let obj = JSON.parse(evt.data);
+
+            // DATA processing
+            let classTxt = obj.indicator == '-' ? 'minus' : 'add';
+            document.getElementById('btcValue').innerHTML = `$${obj.value}`
+            document.getElementById('btcValueOld').innerHTML = `$${oldValue}`
+            oldValue = obj.value;
+            document.getElementById('btcValue').classList.remove((classTxt == 'add' ? 'minus' : 'add'))
+            document.getElementById('btcValue').classList.add(classTxt)
+            // END
+
+            socket.send(JSON.stringify({
+                'continues': true
+            }))
+        }
+
+        socket.onerror = function (e) {
+            console.log(e)
+        }
+
+        socket.onclose = function(e) {
+            console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+            setTimeout(function() {
+                connect();
+            }, 1000);
+        };
+    
+        socket.onerror = function(err) {
+            console.error('Socket encountered error: ', err.message, 'Closing socket');
+            ws.close();
+        };
     }
 
-    socket.onmessage = function (evt) {
-        let obj = JSON.parse(evt.data);
-        let classTxt = obj.indicator == '-' ? 'minus' : 'add';
-        document.getElementById('btcValue').innerHTML = `$${obj.value}`
-        document.getElementById('btcValueOld').innerHTML = `$${oldValue}`
-        oldValue = obj.value;
-        document.getElementById('btcValue').classList.remove((classTxt == 'add' ? 'minus' : 'add'))
-        document.getElementById('btcValue').classList.add(classTxt)
-
-        socket.send(JSON.stringify({
-            'continues': true
-        }))
-    }
-
-    socket.onerror = function (e) {
-        console.log(e)
-    }
+    connect();
     
     function disconnect() {
         socket.send(JSON.stringify({disconnect: '!DISCONNECT'}));
