@@ -43,6 +43,10 @@ class Bitmex:
                 
                 spanPrice = price.find_element_by_class_name("priceWidget")
                 indicator = "-" if float(self.lastPrice) > float(spanPrice.text.replace(",", "")) else "+"
+                
+                if (self.lastPrice != spanPrice.text.replace(",", "")):
+                            break
+
                 self.lastPrice = spanPrice.text.replace(",", "")
 
                 print(indicator, "$" + self.lastPrice)

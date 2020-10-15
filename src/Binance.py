@@ -40,13 +40,17 @@ class Binance:
                 main = WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "list-auto-sizer"))
                 )
-                
+
                 values = main.find_elements_by_class_name("List_list-item-container__oHFzZ")
                 for value in values:
                     prices = value.find_elements_by_class_name("List_list-item-entity__1f-x_")
                     for price in prices:
                         priceItem = price.find_element_by_class_name("price")
                         indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
+                        
+                        if (self.lastPrice != priceItem.text.replace(",", "")):
+                            break
+
                         self.lastPrice = priceItem.text.replace(",", "")
 
                         print(indicator, "$" + self.lastPrice)
