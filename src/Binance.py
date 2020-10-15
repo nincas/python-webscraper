@@ -48,8 +48,8 @@ class Binance:
                         priceItem = price.find_element_by_class_name("price")
                         indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
                         
-                        if (self.lastPrice != priceItem.text.replace(",", "")):
-                            break
+                        if (self.lastPrice == priceItem.text.replace(",", "")):
+                            continue
 
                         self.lastPrice = priceItem.text.replace(",", "")
 
