@@ -65,7 +65,7 @@ class SocketServer:
                 pubsub = await ch.getChannels()
                 while await pubsub.wait_message():
                     msg = await pubsub.get()
-                    sleep(0.6)
+                    sleep(0.2)
                     if msg:
                         await self.send_to_clients(msg.decode(self.FORMAT))
 
