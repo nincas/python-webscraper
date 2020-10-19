@@ -73,7 +73,7 @@ class SocketServer:
 
     # Starting function to run the server
     def start(self):
-        logging.info(f'Server has started.')
+        logging.info(f'Server has started. {self.SERVER}@{self.PORT}')
         startServer = websockets.serve(self.ws_handler, self.SERVER, self.PORT)
         loop = asyncio.get_event_loop()
         loop.run_until_complete(startServer)

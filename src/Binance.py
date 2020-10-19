@@ -9,6 +9,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from .components.RedisClient import RedisClient
+from .components.Currency import Currency
 import os
 import sys
 import json
@@ -33,6 +34,7 @@ class Binance:
         browser.get(self.src)
         browser.implicitly_wait(10)
         r = RedisClient()
+        cur = Currency()
 
         while True:
             try:
@@ -54,11 +56,15 @@ class Binance:
                         self.lastPrice = priceItem.text.replace(",", "")
 
                         print(indicator, "$" + self.lastPrice)
+                        
                         r = RedisClient()
                         r.publishValue('btc-value-binance', json.dumps({
                             "source": self.src,
                             "indicator": indicator,
-                            "value": float(self.lastPrice)
+                            "value": float(self.lastPrice),
+                            "conversion": {
+                                "PHP": "{:.2f}".format(cur.convert(123454), 'PHP')
+                            }
                         }))
 
             except:

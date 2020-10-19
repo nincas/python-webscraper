@@ -9,6 +9,7 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 from .components.RedisClient import RedisClient
+from .components.Currency import Currency
 import os
 import sys
 import json
@@ -33,6 +34,7 @@ class Blockchain:
         browser.get(self.src)
         browser.implicitly_wait(10)
         r = RedisClient()
+        cur = Currency()
 
         while True:
             try:
@@ -53,7 +55,10 @@ class Blockchain:
                 r.publishValue('btc-value-blockchain', json.dumps({
                     "source": self.src,
                     "indicator": indicator,
-                    "value": float(self.lastPrice)
+                    "value": float(self.lastPrice),
+                    "conversion": {
+                        "PHP": "{:.2f}".format(cur.convert(123454), 'PHP')
+                    }
                 }))
 
             except:
