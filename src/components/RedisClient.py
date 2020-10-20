@@ -26,3 +26,6 @@ class RedisClient:
 
     def publishValue(self, key, value):
         self.client.publish(key, value)
+
+    def setValue(self, key, value):
+        self.client.set(key, value)

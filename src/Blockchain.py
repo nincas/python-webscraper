@@ -35,6 +35,7 @@ class Blockchain:
         browser.implicitly_wait(10)
         r = RedisClient()
         cur = Currency()
+        redisKey = 'btc-value-blockchain'
 
         while True:
             try:
@@ -52,7 +53,8 @@ class Blockchain:
                 self.lastPrice = price.text.replace(",", "")
 
                 print(indicator, "$" + self.lastPrice)
-                r.publishValue('btc-value-blockchain', json.dumps({
+                r.setValue(redisKey, float(self.lastPrice))
+                r.publishValue(redisKey, json.dumps({
                     "source": self.src,
                     "indicator": indicator,
                     "value": float(self.lastPrice),

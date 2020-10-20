@@ -35,6 +35,7 @@ class Binance:
         browser.implicitly_wait(10)
         r = RedisClient()
         cur = Currency()
+        redisKey = 'btc-value-binance'
 
         while True:
             try:
@@ -57,8 +58,8 @@ class Binance:
 
                         print(indicator, "$" + self.lastPrice)
                         
-                        r = RedisClient()
-                        r.publishValue('btc-value-binance', json.dumps({
+                        r.setValue(redisKey, float(self.lastPrice))
+                        r.publishValue(redisKey, json.dumps({
                             "source": self.src,
                             "indicator": indicator,
                             "value": float(self.lastPrice),

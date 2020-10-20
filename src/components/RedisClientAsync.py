@@ -28,3 +28,6 @@ class RedisClientAsync:
 
     async def publishValue(self, key, value):
         await self.client.publish(key, value)
+
+    async def setValue(self, key, value):
+        await self.client.set(key, value)

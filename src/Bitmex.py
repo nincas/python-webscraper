@@ -35,6 +35,7 @@ class Bitmex:
         browser.implicitly_wait(10)
         r = RedisClient()
         cur = Currency()
+        redisKey = 'btc-value-bitmex'
 
         while True:
             try:
@@ -52,7 +53,8 @@ class Bitmex:
                 self.lastPrice = spanPrice.text.replace(",", "")
 
                 print(indicator, "$" + self.lastPrice)
-                r.publishValue('btc-value-bitmex', json.dumps({
+                r.setValue(redisKey, float(self.lastPrice))
+                r.publishValue(redisKey, json.dumps({
                     "source": self.src,
                     "indicator": indicator,
                     "value": float(self.lastPrice),
