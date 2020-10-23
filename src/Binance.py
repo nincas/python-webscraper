@@ -40,11 +40,10 @@ class Binance:
         while True:
             try:
                 # Wait until the element appear on the src page.
-                main = WebDriverWait(browser, 10).until(
+                priceItem = WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "showPrice"))
                 )
-
-                priceItem = main.find_element_by_class_name("showPrice")
+                
                 indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
                 
                 # if (self.lastPrice == priceItem.text.replace(",", "")):
