@@ -67,7 +67,7 @@ class SocketServer:
                     msg = await pubsub.get()
                     # sleep(0.2)
                     if msg:
-                        await self.send_to_clients(msg.decode(self.FORMAT))
+                        await ws.send(msg.decode(self.FORMAT))
 
 
 
