@@ -47,8 +47,8 @@ class Blockchain:
                 # price = main.find_element_by_class_name("kpvYqK")
                 indicator = "-" if float(self.lastPrice) > float(price.text.replace(",", "")) else "+"
 
-                if (self.lastPrice == price.text.replace(",", "")):
-                    continue
+                #if (self.lastPrice == price.text.replace(",", "")):
+                #    continue
 
                 self.lastPrice = price.text.replace(",", "")
 
