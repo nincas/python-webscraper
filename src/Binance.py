@@ -43,11 +43,11 @@ class Binance:
                 priceItem = WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.CLASS_NAME, "showPrice"))
                 )
-                
+
                 indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
                 
-                # if (self.lastPrice == priceItem.text.replace(",", "")):
-                #    continue
+                if (self.lastPrice == priceItem.text.replace(",", "")):
+                    continue
 
                 self.lastPrice = priceItem.text.replace(",", "")
 
