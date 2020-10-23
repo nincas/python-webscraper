@@ -16,6 +16,7 @@ class SocketServer:
     FORMAT = 'utf-8'
     SERVER = socket.gethostbyname(socket.gethostname())
     CLIENTS = set()
+    SUBSCRIBERS = {}
     STATE = {"value": {} }
     ALLOWED_ORIGINS = [
         '127.0.0.1'
@@ -24,6 +25,7 @@ class SocketServer:
     # Register socket user on list
     async def register(self, ws: WebSocketClientProtocol) -> None:
         self.CLIENTS.add(ws)
+        self.SUBSCRIBERS[ws.remote_address] = ws;
         logging.info(f'{ws.remote_address} connects')
 
 
@@ -32,6 +34,7 @@ class SocketServer:
     # Remove socket user on list
     async def unregister(self, ws: WebSocketClientProtocol) -> None:
         self.CLIENTS.remove(ws)
+        del self.SUBSCRIBERS[ws.remote_address]
         logging.info(f'{ws.remote_address} disconnects')
 
 
@@ -67,7 +70,8 @@ class SocketServer:
                     msg = await pubsub.get()
                     # sleep(0.2)
                     if msg:
-                        await ws.send(msg.decode(self.FORMAT))
+                        await self.SUBSCRIBERS[ws.remote_address].send(msg.decode(self.FORMAT))
+                        #await ws.send(msg.decode(self.FORMAT))
 
 
 
