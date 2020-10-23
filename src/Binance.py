@@ -41,32 +41,28 @@ class Binance:
             try:
                 # Wait until the element appear on the src page.
                 main = WebDriverWait(browser, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "list-auto-sizer"))
+                    EC.presence_of_element_located((By.CLASS_NAME, "showPrice"))
                 )
 
-                values = main.find_elements_by_class_name("List_list-item-container__oHFzZ")
-                for value in values:
-                    prices = value.find_elements_by_class_name("List_list-item-entity__1f-x_")
-                    for price in prices:
-                        priceItem = price.find_element_by_class_name("price")
-                        indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
-                        
-                        # if (self.lastPrice == priceItem.text.replace(",", "")):
-                        #    continue
+                priceItem = main.find_element_by_class_name("showPrice")
+                indicator = "-" if float(self.lastPrice) > float(priceItem.text.replace(",", "")) else "+"
+                
+                # if (self.lastPrice == priceItem.text.replace(",", "")):
+                #    continue
 
-                        self.lastPrice = priceItem.text.replace(",", "")
+                self.lastPrice = priceItem.text.replace(",", "")
 
-                        print(indicator, "$" + self.lastPrice)
-                        
-                        r.setValue(redisKey, float(self.lastPrice))
-                        r.publishValue(redisKey, json.dumps({
-                            "source": self.src,
-                            "indicator": indicator,
-                            "value": float(self.lastPrice),
-                            "conversion": {
-                                "PHP": "{:.2f}".format(cur.convert(123454), 'PHP')
-                            }
-                        }))
+                print(indicator, "$" + self.lastPrice)
+                
+                r.setValue(redisKey, float(self.lastPrice))
+                r.publishValue(redisKey, json.dumps({
+                    "source": self.src,
+                    "indicator": indicator,
+                    "value": float(self.lastPrice),
+                    "conversion": {
+                        "PHP": "{:.2f}".format(cur.convert(123454), 'PHP')
+                    }
+                }))
 
             except:
                 print("Oops!", sys.exc_info()[0], "occurred.")
