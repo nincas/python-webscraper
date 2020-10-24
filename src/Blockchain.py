@@ -41,7 +41,7 @@ class Blockchain:
             try:
                 # Wait until the element appear on the src page.
                 price = WebDriverWait(browser, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "boKFwX"))
+                    EC.presence_of_element_located((By.CLASS_NAME, "iSlMtX"))
                 )
 
                 # price = main.find_element_by_class_name("kpvYqK")
@@ -64,4 +64,5 @@ class Blockchain:
                 }))
 
             except:
-                print("Oops!", sys.exc_info()[0], "occurred.")
+                print("Oops!", sys.exc_info()[0], "occurred, Refreshing in 2 second(s)")
+                self.scrape(file)

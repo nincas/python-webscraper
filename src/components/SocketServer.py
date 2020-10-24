@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import sys
 import websockets
 from websockets import WebSocketClientProtocol
 import redis
@@ -59,19 +60,21 @@ class SocketServer:
 
     # Distributor function handles all messages and publish events
     async def distribute(self, ws: WebSocketClientProtocol) -> None:
-        async for message in ws:
-            msg = json.loads(message)
-            logging.info(msg)
+        try:
+            jmsg = await ws.recv()
+            
+            msg = json.loads(jmsg)
             if msg:
                 client = await RedisClientAsync().main()
                 ch = await client.subToKey('btc-value-' + msg['source'])
                 pubsub = await ch.getChannels()
+                
                 while await pubsub.wait_message():
                     msg = await pubsub.get()
-                    # sleep(0.2)
                     if msg:
                         await self.SUBSCRIBERS[ws.remote_address].send(msg.decode(self.FORMAT))
-                        #await ws.send(msg.decode(self.FORMAT))
+        except:
+            print("Oops!", sys.exc_info()[0], "occurred")
 
 
 

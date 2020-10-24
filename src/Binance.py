@@ -64,4 +64,5 @@ class Binance:
                 }))
 
             except:
-                print("Oops!", sys.exc_info()[0], "occurred.")
+                print("Oops!", sys.exc_info()[0], "occurred, Refreshing in 2 second(s)")
+                self.scrape(file)

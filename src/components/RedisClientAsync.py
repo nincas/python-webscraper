@@ -24,7 +24,7 @@ class RedisClientAsync:
         return self
 
     async def getChannels(self):
-        return self.client.channels[self.channel]
+        return await self.client.channels[self.channel]
 
     async def publishValue(self, key, value):
         await self.client.publish(key, value)
