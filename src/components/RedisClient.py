@@ -6,7 +6,7 @@ class RedisClient:
     pubsub = None
     isSub = False
     host = '127.0.0.1'
-    password = '' # Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf
+    password = 'Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf' # Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf
 
     def __init__(self): 
         self.client = redis.Redis(host=self.host, port=6379, password=self.password)

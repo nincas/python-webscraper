@@ -8,10 +8,10 @@ class RedisClientAsync:
     isSub = False
     channel = None
     host = '127.0.0.1'
-    password = '' # Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf
+    password = 'Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf' # Ccnkbq9V4KDVCyT5FfYpH7ZPhcvisYCf
 
     async def main(self):
-        self.client = await aioredis.create_redis_pool(address=(self.host, 6379))
+        self.client = await aioredis.create_redis_pool(address=(self.host, 6379), password=self.password)
         return self
 
     def getClient(self):
