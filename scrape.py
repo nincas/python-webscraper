@@ -1,6 +1,7 @@
 from src.Binance import Binance
 from src.Blockchain import Blockchain
 from src.Bitmex import Bitmex
+from src.Bybit import Bybit
 import time
 import os
 import asyncio
@@ -10,7 +11,7 @@ from sys import exit, argv, exc_info
 
 
 # Vars
-validArgs = ['binance', 'blockchain', 'bitmex']
+validArgs = ['binance', 'blockchain', 'bitmex', 'bybit']
 
 
 try:
@@ -41,6 +42,11 @@ try:
             # Blockchain - Pattern
             blockChain = Bitmex("https://www.bitmex.com/app/trade/XBTUSD")
             blockChain.scrape(PATH)
+
+        elif argv[1] == 'bybit':
+            # Bybit - Pattern
+            byBit = Bybit("https://www.bybit.com/trade/inverse/BTCUSD")
+            byBit.scrape(PATH)
 
 except Exception as error:
     print("Oops! Error Caught:", error)
