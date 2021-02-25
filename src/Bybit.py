@@ -9,7 +9,7 @@ from selenium.common import exceptions
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-# from .components.RedisClient import RedisClient
+from .components.RedisClient import RedisClient
 from .components.Currency import Currency
 import os
 import sys
